@@ -80,11 +80,22 @@ export const defaultSettings = {
   weeksStartOn: 1,
 }
 
+export const defaultWeekendTargets = [
+  { id: 'career_progress', name: 'Career Progress' },
+  { id: 'water_target', name: 'Water Target' },
+  { id: 'sleep_routine', name: 'Sleep Routine' },
+  { id: 'semen_retention', name: 'Semen Retention' },
+  { id: 'bing_points', name: 'Bing Points' },
+]
+
 const defaultConfig = {
   settings: defaultSettings,
   goals: defaultGoals,
+  weekendTargets: defaultWeekendTargets,
+  weekendTargetHistory: defaultWeekendTargets,
   dayRecords: {},
   weekendRecords: {},
+  notifications: [],
 }
 
 export default defaultConfig

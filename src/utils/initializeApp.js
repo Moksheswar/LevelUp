@@ -21,8 +21,11 @@ export const initializeApp = () => {
       ...defaultConfig.settings,
       ...existingData.settings,
     },
+    weekendTargets: existingData.weekendTargets || defaultConfig.weekendTargets,
+    weekendTargetHistory: existingData.weekendTargetHistory || defaultConfig.weekendTargetHistory,
     dayRecords: existingData.dayRecords || {},
     weekendRecords: existingData.weekendRecords || {},
+    notifications: existingData.notifications || [],
   }
 
   saveAppData(mergedData)

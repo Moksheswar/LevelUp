@@ -188,6 +188,7 @@ function App() {
   const [notificationsOpen, setNotificationsOpen] = useState(false)
   const [importError, setImportError] = useState('')
   const fileInputRef = useRef(null)
+  const notificationMenuRef = useRef(null)
 
   const goals = useMemo(() => appData.goals || [], [appData.goals])
   const weekendTargets = useMemo(() => (
@@ -384,6 +385,28 @@ function App() {
 
     return () => window.clearInterval(reminderTimer)
   }, [])
+
+  useEffect(() => {
+    if (!notificationsOpen) {
+      return undefined
+    }
+
+    const handleOutsideClick = (event) => {
+      if (!notificationMenuRef.current) {
+        return
+      }
+
+      if (!notificationMenuRef.current.contains(event.target)) {
+        setNotificationsOpen(false)
+      }
+    }
+
+    window.addEventListener('pointerdown', handleOutsideClick)
+
+    return () => {
+      window.removeEventListener('pointerdown', handleOutsideClick)
+    }
+  }, [notificationsOpen])
 
   const goToToday = () => {
     const today = new Date()
@@ -643,7 +666,7 @@ function App() {
           <h1>{settings.appName || 'LevelUp'}</h1>
         </div>
         <div className="topbar-actions">
-          <div className="notification-menu">
+          <div className="notification-menu" ref={notificationMenuRef}>
             <button
               type="button"
               className="icon-button notification-button"

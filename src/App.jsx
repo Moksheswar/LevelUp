@@ -662,7 +662,6 @@ function App() {
     <div className="app-shell">
       <header className="topbar">
         <div>
-          <p className="eyebrow">Local-First Habit Scorecard</p>
           <h1>{settings.appName || 'LevelUp'}</h1>
         </div>
         <div className="topbar-actions">
@@ -1052,7 +1051,7 @@ function DayEditor({ canTrack, record, onChange, onToggleGoal }) {
       </label>
 
       {!canTrack && (
-        <p className="notice muted">Tracking unlocks when this date arrives.</p>
+        <p className="notice muted">Goal tracking unlocks when this date arrives. You can add tasks and notes now.</p>
       )}
 
       <div className="checklist">
@@ -1078,20 +1077,20 @@ function DayEditor({ canTrack, record, onChange, onToggleGoal }) {
                 type="checkbox"
                 checked={task.completed}
                 aria-label="Task Completed"
-                disabled={!canTrack || !record.activeDay}
+                disabled={!record.activeDay}
                 onChange={(event) => updateTask(task.id, { completed: event.target.checked })}
               />
               <input
                 value={task.title}
                 placeholder="Task"
-                disabled={!canTrack || !record.activeDay}
+                disabled={!record.activeDay}
                 onChange={(event) => updateTask(task.id, { title: event.target.value })}
               />
               <button
                 type="button"
                 className="icon-button"
                 aria-label="Remove Task"
-                disabled={!canTrack || !record.activeDay}
+                disabled={!record.activeDay}
                 onClick={() => removeTask(task.id)}
               >
                 x
@@ -1103,7 +1102,7 @@ function DayEditor({ canTrack, record, onChange, onToggleGoal }) {
         <button
           type="button"
           className="ghost-button"
-          disabled={!canTrack || !record.activeDay}
+          disabled={!record.activeDay}
           onClick={() => onChange((current) => ({
             ...current,
             temporaryTasks: [...(current.temporaryTasks || []), emptyTask()],
@@ -1117,7 +1116,6 @@ function DayEditor({ canTrack, record, onChange, onToggleGoal }) {
         Notes
         <textarea
           value={record.notes}
-          disabled={!canTrack}
           onChange={(event) => onChange((current) => ({
             ...current,
             notes: event.target.value,
@@ -1132,7 +1130,7 @@ function WeekendEditor({ canTrack, record, weekendTargets, onChange }) {
   return (
     <div className="editor-stack">
       {!canTrack && (
-        <p className="notice muted">Tracking unlocks when this date arrives.</p>
+        <p className="notice muted">Target tracking unlocks when this date arrives. You can add tasks and notes now.</p>
       )}
 
       <div className="checklist">
@@ -1165,7 +1163,6 @@ function WeekendEditor({ canTrack, record, weekendTargets, onChange }) {
               type="checkbox"
               checked={goal.completed}
               aria-label="Task Completed"
-              disabled={!canTrack}
               onChange={(event) => onChange((current) => ({
                 ...current,
                 customGoals: (current.customGoals || []).map((item) => (
@@ -1176,7 +1173,6 @@ function WeekendEditor({ canTrack, record, weekendTargets, onChange }) {
             <input
               value={goal.title}
               placeholder="Task"
-              disabled={!canTrack}
               onChange={(event) => onChange((current) => ({
                 ...current,
                 customGoals: (current.customGoals || []).map((item) => (
@@ -1188,7 +1184,6 @@ function WeekendEditor({ canTrack, record, weekendTargets, onChange }) {
               type="button"
               className="icon-button"
               aria-label="Remove Task"
-              disabled={!canTrack}
               onClick={() => onChange((current) => ({
                 ...current,
                 customGoals: (current.customGoals || []).filter((item) => item.id !== goal.id),
@@ -1203,7 +1198,6 @@ function WeekendEditor({ canTrack, record, weekendTargets, onChange }) {
       <button
         type="button"
         className="ghost-button"
-        disabled={!canTrack}
         onClick={() => onChange((current) => ({
           ...current,
           customGoals: [...(current.customGoals || []), emptyWeekendGoal()],
@@ -1216,7 +1210,6 @@ function WeekendEditor({ canTrack, record, weekendTargets, onChange }) {
         Notes
         <textarea
           value={record.notes}
-          disabled={!canTrack}
           onChange={(event) => onChange((current) => ({
             ...current,
             notes: event.target.value,

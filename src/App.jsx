@@ -18,6 +18,7 @@ import {
   toDateKey,
 } from './utils/dateUtils'
 import { initializeApp } from './utils/initializeApp'
+import { getNextReminderTime, getReminderDelayMs } from './utils/reminderUtils'
 
 const tabs = ['Calendar', 'Goals', 'Analytics', 'Settings']
 
@@ -189,6 +190,7 @@ function App() {
   const [importError, setImportError] = useState('')
   const fileInputRef = useRef(null)
   const notificationMenuRef = useRef(null)
+  const reminderTimerRef = useRef(null)
 
   const goals = useMemo(() => appData.goals || [], [appData.goals])
   const weekendTargets = useMemo(() => (
@@ -369,7 +371,19 @@ function App() {
   }
 
   useEffect(() => {
-    const reminderTimer = window.setInterval(() => {
+    const now = new Date()
+    const todayKey = toDateKey(now)
+    const storedData = initializeApp()
+
+    if (!storedData.notifications?.some((notification) => notification.date === todayKey)) {
+      const preparedData = prepareNotifications(storedData)
+      setAppData(preparedData)
+      saveAppData(preparedData)
+    }
+  }, [])
+
+  useEffect(() => {
+    const triggerReminderCheck = () => {
       setCurrentDateKey(toDateKey(new Date()))
       setAppData((currentData) => {
         const preparedData = prepareNotifications(currentData)
@@ -381,9 +395,43 @@ function App() {
         saveAppData(preparedData)
         return preparedData
       })
-    }, 60000)
+    }
 
-    return () => window.clearInterval(reminderTimer)
+    const scheduleReminderCheck = () => {
+      if (reminderTimerRef.current) {
+        window.clearTimeout(reminderTimerRef.current)
+      }
+
+      const now = new Date()
+      const nextReminderTime = getNextReminderTime(now)
+      const delayMs = getReminderDelayMs(now, nextReminderTime)
+
+      reminderTimerRef.current = window.setTimeout(() => {
+        triggerReminderCheck()
+        scheduleReminderCheck()
+      }, delayMs)
+    }
+
+    const handleAppActivity = () => {
+      if (document.visibilityState === 'visible' || navigator.onLine) {
+        triggerReminderCheck()
+      }
+    }
+
+    scheduleReminderCheck()
+    window.addEventListener('focus', handleAppActivity)
+    window.addEventListener('online', handleAppActivity)
+    document.addEventListener('visibilitychange', handleAppActivity)
+
+    return () => {
+      if (reminderTimerRef.current) {
+        window.clearTimeout(reminderTimerRef.current)
+      }
+
+      window.removeEventListener('focus', handleAppActivity)
+      window.removeEventListener('online', handleAppActivity)
+      document.removeEventListener('visibilitychange', handleAppActivity)
+    }
   }, [])
 
   useEffect(() => {
